@@ -1,3 +1,0 @@
-/mnt/Data/暂时项目/C学习/chess/build/CMakeFiles/chess_game.dir
-/mnt/Data/暂时项目/C学习/chess/build/CMakeFiles/edit_cache.dir
-/mnt/Data/暂时项目/C学习/chess/build/CMakeFiles/rebuild_cache.dir
