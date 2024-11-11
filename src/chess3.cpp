@@ -1,6 +1,15 @@
 #include <iostream>
+#include <cstdlib>
 #include "../include/player.h"
 #include "../include/game.h"
+
+void clearScreen() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
 
 class Game
 {
@@ -10,7 +19,7 @@ private:
     void chooseGameType()
     {
         // 选择游戏类型
-        cout << "\033[2J\033[H";
+        clearScreen();
         cout << "Choose the game type (1 or 2): " << endl;
         cout << "  1. Human-Machine competition" << endl;
         cout << "  2. Machine-Machine competition" << endl;
@@ -24,7 +33,7 @@ private:
             cout << "Invalid size. Try again." << endl;
         }
         // 选择游戏大小
-        cout << "\033[2J\033[H";
+        clearScreen();
         cout << "Choose the game size (8 - 20): " << endl;
         while (true)
         {
@@ -40,7 +49,7 @@ private:
     {
         // 选择是否重新开始
         int isRestart;
-        cout << "\033[2J\033[H";
+        clearScreen();
         cout << "Do you want to restart? (1 or 2): " << endl;
         cout << "  1. Yes." << endl;
         cout << "  2. No." << endl;
