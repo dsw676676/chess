@@ -1,0 +1,1 @@
+/usr/bin/g++ -g CMakeFiles/chess_game.dir/src/chess3.cpp.o -o /mnt/Data/暂时项目/C学习/chess/bin/chess_game

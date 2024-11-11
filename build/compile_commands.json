@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/mnt/Data/暂时项目/C学习/chess/build",
+  "command": "/usr/bin/g++  -I/mnt/Data/暂时项目/C学习/chess/include -g -std=gnu++11 -o CMakeFiles/chess_game.dir/src/chess3.cpp.o -c /mnt/Data/暂时项目/C学习/chess/src/chess3.cpp",
+  "file": "/mnt/Data/暂时项目/C学习/chess/src/chess3.cpp",
+  "output": "CMakeFiles/chess_game.dir/src/chess3.cpp.o"
+}
+]
