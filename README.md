@@ -5,26 +5,19 @@
 ```
 .
 ├── bin
-│   └── chess_game
-├── build
-│   ├── CMakeCache.txt
-│   ├── CMakeFiles
-│   ├── cmake_install.cmake
-│   ├── compile_commands.json
-│   ├── Makefile
-│   └── Testing
+│   ├── chess_game_linux
+│   └── chess_game_windows.exe
+├── cmake
+│   ├── LinuxToolchain.cmake
+│   └── WindowsToolchain.cmake
 ├── CMakeLists.txt
 ├── include
-│   ├── game copy.h
 │   ├── game.h
-│   ├── player copy.h
 │   └── player.h
 ├── README.md
 └── src
     ├── chess1.cpp
     ├── chess2.cpp
-    ├── chess3 copy.cpp
-    ├── chess3_copy.cpp
     └── chess3.cpp
 ```
 
