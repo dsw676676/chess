@@ -5,6 +5,9 @@ class HumanRobotGame;
 class RobotRobotGame;
 
 #include <iostream>
+#include <limits>
+#include <chrono>
+#include <thread>
 #include "player.h"
 using namespace std;
 
@@ -23,7 +26,7 @@ private:
     void initializeGame()
     {
         // 选择玩家
-        cout << "\033[2J\033[H";
+        clearScreen();
         cout << "Choose your piece (1 or 2): " << endl;
         cout << "  1. Black piece: 'X'." << endl;
         cout << "  2. White piece: 'O'." << endl;
@@ -35,10 +38,12 @@ private:
                 humanPlayer.setPiece(humanPiece);
                 break;
             }
+            cin.clear(); // 清除错误标志
+            cin.ignore(numeric_limits<std::streamsize>::max(), '\n'); // 忽略错误输入直到下一个换行符
             cout << "Invalid piece. Try again." << endl;
         }
         // 选择难度
-        cout << "\033[2J\033[H";
+        clearScreen();
         cout << "Choose the robot1 difficulty (1 or 2 or 3): " << endl;
         cout << "  1. Easy." << endl;
         cout << "  2. Medium." << endl;
@@ -51,6 +56,8 @@ private:
                 robotPlayer.setPiece((humanPiece == 1) ? 2 : 1, difficulty);
                 break;
             }
+            cin.clear(); // 清除错误标志
+            cin.ignore(numeric_limits<std::streamsize>::max(), '\n'); // 忽略错误输入直到下一个换行符
             cout << "Invalid difficulty. Try again." << endl;
         }
     }
@@ -65,7 +72,7 @@ public:
         while (true)
         {
             // 显示与着棋
-            cout << "\033[2J\033[H";
+            clearScreen();
             cout << "Turn " << turn << " - Player " << currentPiece << ":" << endl;
             board.display();
             if (currentPiece == humanPiece)
@@ -79,7 +86,7 @@ public:
             // 胜败判别
             if (referee.checkWin(board, currentPiece))
             {
-                cout << "\033[2J\033[H";
+                clearScreen();
                 cout << "Player " << currentPiece << " wins!" << endl;
                 board.display();
                 break;
@@ -106,7 +113,7 @@ private:
     void initializeGame()
     {
         // 选择难度1
-        cout << "\033[2J\033[H";
+        clearScreen();
         cout << "Choose the robot1 difficulty (1 or 2 or 3): " << endl;
         cout << "  1. Easy." << endl;
         cout << "  2. Medium." << endl;
@@ -119,10 +126,12 @@ private:
                 robotPlayer1.setPiece(1, difficulty1);
                 break;
             }
+            cin.clear(); // 清除错误标志
+            cin.ignore(numeric_limits<std::streamsize>::max(), '\n'); // 忽略错误输入直到下一个换行符
             cout << "Invalid difficulty. Try again." << endl;
         }
         // 选择难度2
-        cout << "\033[2J\033[H";
+        clearScreen();
         cout << "Choose the robot2 difficulty (1 or 2 or 3): " << endl;
         cout << "  1. Easy." << endl;
         cout << "  2. Medium." << endl;
@@ -135,6 +144,8 @@ private:
                 robotPlayer2.setPiece(2, difficulty2);
                 break;
             }
+            cin.clear(); // 清除错误标志
+            cin.ignore(numeric_limits<std::streamsize>::max(), '\n'); // 忽略错误输入直到下一个换行符
             cout << "Invalid difficulty. Try again." << endl;
         }
     }
@@ -149,7 +160,7 @@ public:
         while (true)
         {
             // 显示与着棋
-            cout << "\033[2J\033[H";
+            clearScreen();
             cout << "Turn " << turn << " - Player " << currentPiece << ":" << endl;
             board.display();
             if (currentPiece == 1)
@@ -163,9 +174,10 @@ public:
             // 胜败判别
             if (referee.checkWin(board, currentPiece))
             {
-                cout << "\033[2J\033[H";
+                clearScreen();
                 cout << "Player " << currentPiece << " wins!" << endl;
                 board.display();
+                this_thread::sleep_for(chrono::seconds(5));
                 break;
             }
             // 棋手切换

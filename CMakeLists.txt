@@ -1,23 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 project(chess_game)
 
-# 设置标准
+# 指定C++标准
 set(CMAKE_CXX_STANDARD 11)
 
-# 输入设置
-# find_package(Qt6 COMPONENTS Core Gui Widgets REQUIRED)
-include_directories("include")
-
-# 输出设置
+# 添加可执行文件
+include_directories(include)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-add_executable(chess_game src/chess3.cpp)
+add_executable(chess_game_linux src/chess3.cpp)
+# add_executable(chess_game_windows.exe src/chess3.cpp)
 
-# 链接静态库
-# set(CMAKE_AUTOMOC ON)
-# set(CMAKE_AUTORCC ON)
-# set(CMAKE_AUTOUIC ON)
-# target_link_libraries(chess_game
-#     PRIVATE Qt6::Core
-#     PRIVATE Qt6::Gui
-#     PRIVATE Qt6::Widgets
-# )
+# 指定交叉编译工具链文件
+set(CMAKE_TOOLCHAIN_FILE cmake/LinuxToolchain.cmake)
+# set(CMAKE_TOOLCHAIN_FILE cmake/WindowsToolchain.cmake)

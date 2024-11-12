@@ -3,14 +3,6 @@
 #include "../include/player.h"
 #include "../include/game.h"
 
-void clearScreen() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
-
 class Game
 {
 private:
@@ -20,7 +12,7 @@ private:
     {
         // 选择游戏类型
         clearScreen();
-        cout << "Choose the game type (1 or 2): " << endl;
+        cout << "Choose the gametype (1 or 2): " << endl;
         cout << "  1. Human-Machine competition" << endl;
         cout << "  2. Machine-Machine competition" << endl;
         while (true)
@@ -30,7 +22,9 @@ private:
             {
                 break;
             }
-            cout << "Invalid size. Try again." << endl;
+            cin.clear(); // 清除错误标志
+            cin.ignore(numeric_limits<std::streamsize>::max(), '\n'); // 忽略错误输入直到下一个换行符
+            cout << "Invalid gametype. Try again." << endl;
         }
         // 选择游戏大小
         clearScreen();
@@ -42,7 +36,9 @@ private:
             {
                 break;
             }
-            cout << "Invalid piece. Try again." << endl;
+            cin.clear(); // 清除错误标志
+            cin.ignore(numeric_limits<std::streamsize>::max(), '\n'); // 忽略错误输入直到下一个换行符
+            cout << "Invalid size. Try again." << endl;
         }
     }
     bool chooseRestart()
@@ -60,6 +56,8 @@ private:
             {
                 break;
             }
+            cin.clear(); // 清除错误标志
+            cin.ignore(numeric_limits<std::streamsize>::max(), '\n'); // 忽略错误输入直到下一个换行符
             cout << "Invalid input. Try again." << endl;
         }
         return isRestart == 1;

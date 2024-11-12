@@ -9,7 +9,17 @@ class Referee;
 #include <iostream>
 #include <vector>
 #include <climits>
+#include <cstdlib>
 using namespace std;
+
+void clearScreen()
+{
+#if defined(_WIN32)
+    system("cls");
+#elif defined(__linux__) || defined(__APPLE__)
+    system("clear");
+#endif
+}
 
 class Board
 {
