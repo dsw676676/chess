@@ -16,9 +16,7 @@
 │   └── player.h
 ├── README.md
 └── src
-    ├── chess1.cpp
-    ├── chess2.cpp
-    └── chess3.cpp
+    └── chess.cpp
 ```
 
 ## 运行方式
