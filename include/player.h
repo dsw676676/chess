@@ -32,22 +32,6 @@ public:
     {
         board.resize(size, vector<int>(size, 0));
     }
-    bool isInbounds(int x, int y)
-    {
-        if (x >= 0 && x < size && y >= 0 && y < size)
-        {
-            return true;
-        }
-        return false;
-    }
-    bool isInboundsAndEmpty(int x, int y)
-    {
-        if (x >= 0 && x < size && y >= 0 && y < size && board[x][y] == 0)
-        {
-            return true;
-        }
-        return false;
-    }
     int getIn(int x, int y)
     {
         if (x >= 0 && x < size && y >= 0 && y < size)
@@ -55,21 +39,6 @@ public:
             return board[x][y];
         }
         return -1;
-    }
-    vector<pair<int, int>> getAvailableMoves()
-    {
-        vector<pair<int, int>> availableMoves;
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                if (board[x][y] == 0)
-                {
-                    availableMoves.emplace_back(x, y);
-                }
-            }
-        }
-        return availableMoves;
     }
     void setIn(int x, int y, int piece)
     {
@@ -107,10 +76,134 @@ public:
     }
 };
 
+class Referee
+{
+private:
+    int countConsecutive(Board board, int x, int y, int dx, int dy, int piece) // 检查连子数量
+    {
+        int count = 0;
+        for (int step = 1; step < 5; step++)
+        {
+            int newX = x + step * dx;
+            int newY = y + step * dy;
+            if (board.getIn(newX, newY) == piece)
+            {
+                count++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        return count;
+    }
+    bool isThree(Board &board, int x, int y, int dx, int dy, int piece) // 检查是否形成活三
+    {
+        // 活三的两侧至少有一个空位
+        return (countConsecutive(board, x, y, dx, dy, piece) == 2) &&
+               (board.getIn(x - dx, y - dy) == 0 || board.getIn(x + 3 * dx, y + 3 * dy) == 0);
+    }
+    bool isFour(Board &board, int x, int y, int dx, int dy, int piece) // 检查是否形成活四
+    {
+        // 活四的两侧至少有一个空位
+        return (countConsecutive(board, x, y, dx, dy, piece) == 3) &&
+               (board.getIn(x - dx, y - dy) == 0 || board.getIn(x + 4 * dx, y + 4 * dy) == 0);
+    }
+    bool isLongLineBan(Board &board, int x, int y, int piece) // 检查长连禁手
+    {
+        // 长连是指超过五个连续的棋子
+        return (countConsecutive(board, x, y, 0, 1, piece) + countConsecutive(board, x, y, 0, -1, piece) > 4) ||
+               (countConsecutive(board, x, y, 1, 0, piece) + countConsecutive(board, x, y, -1, 0, piece) > 4) ||
+               (countConsecutive(board, x, y, 1, 1, piece) + countConsecutive(board, x, y, -1, -1, piece) > 4) ||
+               (countConsecutive(board, x, y, 1, -1, piece) + countConsecutive(board, x, y, -1, 1, piece) > 4);
+    }
+
+    bool isThreeThreeBan(Board &board, int x, int y, int piece) // 检查三三禁手
+    {
+        int threeCount = 0;
+        // 检查四个方向
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0)
+                    continue;
+                if (isThree(board, x, y, dx, dy, piece))
+                    threeCount++;
+            }
+        }
+        return threeCount >= 2;
+    }
+
+    bool isFourFourBan(Board& board, int x, int y, int piece) // 检查四四禁手
+    {
+        int fourCount = 0;
+        // 检查四个方向
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0)
+                    continue;
+                if (isFour(board, x, y, dx, dy, piece))
+                    fourCount++;
+            }
+        }
+        return fourCount >= 2;
+    }
+    bool checkBan(Board &board, int x, int y, int piece)
+    {
+        if (piece == 1)
+        {
+            if (
+                isLongLineBan(board, x, y, piece) ||
+                isThreeThreeBan(board, x, y, piece) ||
+                isFourFourBan(board, x, y, piece))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+public:
+    bool checkInBoundAndEmpty(Board &board, int x, int y)
+    {
+        if (x >= 0 && x < board.size && y >= 0 && y < board.size && board.getIn(x, y) == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+    bool checkAvailable(Board &board, int x, int y, int piece)
+    {
+        if (x >= 0 && x < board.size && y >= 0 && y < board.size && board.getIn(x, y) == 0 && !checkBan(board, x, y, piece))
+        {
+            return true;
+        }
+        return false;
+    }
+    bool checkWin(Board &board, int currentPiece) // 胜负判断
+    {
+        for (int i = 0; i < board.size; i++)
+        {
+            for (int j = 0; j < board.size; j++)
+            {
+                if (board.getIn(i, j) == currentPiece && (countConsecutive(board, i, j, 0, 1, currentPiece) + countConsecutive(board, i, j, 0, -1, currentPiece) >= 4 || countConsecutive(board, i, j, 1, 0, currentPiece) + countConsecutive(board, i, j, -1, 0, currentPiece) >= 4 || countConsecutive(board, i, j, 1, 1, currentPiece) + countConsecutive(board, i, j, -1, -1, currentPiece) >= 4 || countConsecutive(board, i, j, 1, -1, currentPiece) + countConsecutive(board, i, j, -1, 1, currentPiece) >= 4))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+
 class HumanPlayer
 {
 private:
     int piece;
+    Referee referee;
 
 public:
     HumanPlayer() {}
@@ -118,7 +211,7 @@ public:
     {
         piece = choosePiece;
     }
-    Board move(Board board)
+    Board move(Board &board)
     {
         int x, y;
         cout << "Enter your move (row and column): " << endl;
@@ -127,7 +220,7 @@ public:
             // 输入
             cin >> x >> y;
             // 判别
-            if (board.isInboundsAndEmpty(x, y))
+            if (referee.checkAvailable(board, x, y, piece))
             {
                 board.setIn(x, y, piece);
                 break;
@@ -148,7 +241,23 @@ class AI
 private:
     int piece;
     int opponentPiece;
-    int evaluateLine(Board board, int x, int y, int dx, int dy, int piece)
+    Referee referee;
+    vector<pair<int, int>> getAvailableMoves(Board &board, int piece)
+    {
+        vector<pair<int, int>> availableMoves;
+        for (int x = 0; x < board.size; x++)
+        {
+            for (int y = 0; y < board.size; y++)
+            {
+                if (referee.checkAvailable(board, x, y, piece))
+                {
+                    availableMoves.emplace_back(x, y);
+                }
+            }
+        }
+        return availableMoves;
+    }
+    int evaluateLine(Board &board, int x, int y, int dx, int dy, int piece)
     {
         int count = 1; // 中间棋子
         int block = 0; // 封闭端点数
@@ -163,7 +272,7 @@ private:
             tx += dx;
             ty += dy;
         }
-        if (board.isInboundsAndEmpty(tx, ty))
+        if (referee.checkInBoundAndEmpty(board, tx, ty))
         {
             empty++;
         }
@@ -181,7 +290,7 @@ private:
             tx -= dx;
             ty -= dy;
         }
-        if (board.isInboundsAndEmpty(tx, ty))
+        if (referee.checkInBoundAndEmpty(board, tx, ty))
         {
             empty++;
         }
@@ -215,7 +324,7 @@ private:
         }
         return 0;
     }
-    int evaluatePosition(Board board, int x, int y, int piece)
+    int evaluatePosition(Board &board, int x, int y, int piece)
     {
         int score = 0;
         // 检查所有方向
@@ -226,7 +335,7 @@ private:
         score += evaluateLine(board, x, y, 1, -1, piece); // 副对角线
         return score;
     }
-    int evaluateBoard(Board board, int piece)
+    int evaluateBoard(Board &board, int piece)
     {
         int opponentPiece = (piece == 1) ? 2 : 1;
         int score = 0;
@@ -249,7 +358,7 @@ private:
         // 返回当前玩家的得分减去对手的得分
         return score - opponentScore;
     }
-    int minimax(Board board, int depth, int currentpiece, int alpha, int beta)
+    int minimax(Board &board, int depth, int currentpiece, int alpha, int beta)
     {
         if (depth == 0)
         {
@@ -258,7 +367,7 @@ private:
         if (currentpiece == piece)
         {
             int maxEval = INT_MIN;
-            for (const auto &move : board.getAvailableMoves())
+            for (const auto &move : getAvailableMoves(board, piece))
             {
                 board.setIn(move.first, move.second, piece);
                 int eval = minimax(board, depth - 1, opponentPiece, alpha, beta);
@@ -275,7 +384,7 @@ private:
         else
         {
             int minEval = INT_MAX;
-            for (const auto &move : board.getAvailableMoves())
+            for (const auto &move : getAvailableMoves(board, piece))
             {
                 board.setIn(move.first, move.second, opponentPiece);
                 int eval = minimax(board, depth - 1, piece, alpha, beta);
@@ -297,11 +406,11 @@ public:
         piece = choosePiece;
         opponentPiece = (choosePiece == 1) ? 2 : 1;
     }
-    pair<int, int> getBestPoint(Board board, int piece, int depth)
+    pair<int, int> getBestPoint(Board &board, int piece, int depth)
     {
         int bestScore = INT_MIN;
         pair<int, int> bestMove;
-        for (const auto &move : board.getAvailableMoves())
+        for (const auto &move : getAvailableMoves(board, piece))
         {
             board.setIn(move.first, move.second, piece);
             int score = minimax(board, depth, false, INT_MIN, INT_MAX);
@@ -334,52 +443,13 @@ public:
         depth = difficulty - 1;
         ai.setPiece(choosePiece);
     }
-    Board move(Board board)
+    Board move(Board &board)
     {
         pair<int, int> bestMove = ai.getBestPoint(board, piece, depth);
         board.setIn(bestMove.first, bestMove.second, piece);
         cout << "Robot plays at: (" << bestMove.first << ", " << bestMove.second << ")" << endl;
 
         return board;
-    }
-};
-
-class Referee
-{
-private:
-    int countConsecutive(Board board, int x, int y, int dx, int dy, int piece) // 检查连子数量
-    {
-        int count = 0;
-        for (int step = 1; step < 5; step++)
-        {
-            int newX = x + step * dx;
-            int newY = y + step * dy;
-            if (board.getIn(newX, newY) == piece)
-            {
-                count++;
-            }
-            else
-            {
-                break;
-            }
-        }
-        return count;
-    }
-
-public:
-    bool checkWin(Board board, int currentPiece) // 胜负判断
-    {
-        for (int i = 0; i < board.size; i++)
-        {
-            for (int j = 0; j < board.size; j++)
-            {
-                if (board.getIn(i, j) == currentPiece && (countConsecutive(board, i, j, 0, 1, currentPiece) + countConsecutive(board, i, j, 0, -1, currentPiece) >= 4 || countConsecutive(board, i, j, 1, 0, currentPiece) + countConsecutive(board, i, j, -1, 0, currentPiece) >= 4 || countConsecutive(board, i, j, 1, 1, currentPiece) + countConsecutive(board, i, j, -1, -1, currentPiece) >= 4 || countConsecutive(board, i, j, 1, -1, currentPiece) + countConsecutive(board, i, j, -1, 1, currentPiece) >= 4))
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 };
 

@@ -89,6 +89,15 @@ public:
                 clearScreen();
                 cout << "Player " << currentPiece << " wins!" << endl;
                 board.display();
+                this_thread::sleep_for(chrono::seconds(5));
+                break;
+            }
+            if (turn >= board.size * board.size)
+            {
+                clearScreen();
+                cout << "The game is a tie!" << endl;
+                board.display();
+                this_thread::sleep_for(chrono::seconds(5));
                 break;
             }
             // 棋手切换
@@ -176,6 +185,14 @@ public:
             {
                 clearScreen();
                 cout << "Player " << currentPiece << " wins!" << endl;
+                board.display();
+                this_thread::sleep_for(chrono::seconds(5));
+                break;
+            }
+            if (turn >= board.size * board.size)
+            {
+                clearScreen();
+                cout << "The game is a tie!" << endl;
                 board.display();
                 this_thread::sleep_for(chrono::seconds(5));
                 break;
